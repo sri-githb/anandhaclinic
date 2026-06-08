@@ -408,7 +408,14 @@
       } else {
         item.style.backgroundImage = `url('${src}')`;
       }
+      item.addEventListener('click', () => openLightbox(src, item.querySelector('.gallery__item-cap')?.textContent || ''));
     });
+
+    // BA images — click to preview full image
+    const baBefore = exp.querySelector('.ba__before');
+    const baAfter  = exp.querySelector('.ba__after');
+    if (baBefore) baBefore.addEventListener('click', () => openLightbox(baBefore.closest('.js-ba').dataset.before, 'Before'));
+    if (baAfter)  baAfter.addEventListener('click',  () => openLightbox(baAfter.closest('.js-ba').dataset.after, 'After'));
 
     // Lightbox triggers
     $$('.js-zoom', exp).forEach((el) => {
