@@ -197,8 +197,8 @@
       gallery: [
         { src: 'assets/Implantology/Implantology.jpg', cap: 'Surgical Overview' },
         { src: 'assets/Implantology/Case1/before.jpg', cap: 'Pre-operative Assessment' },
-        { src: 'assets/Implantology/Case1/Trial.jpg', cap: 'Trial Prosthetic' },
         { src: 'assets/Implantology/Case2/Impression.jpg', cap: 'Impression Workflow' },
+        { src: 'assets/Implantology/Case1/Trial.jpg', cap: 'Trial Prosthetic' },
         { src: 'assets/Implantology/Case4/Final.jpg', cap: 'Final Restoration' },
       ],
       ba: { before: 'assets/Implantology/Case1/before.jpg', after: 'assets/Implantology/Case1/Final.jpg', label: 'Missing mandibular molar — single-tooth implant restoration' },
@@ -208,10 +208,9 @@
       meta: 'Adhesive Dentistry · Conservative Reconstruction',
       gallery: [
         { src: 'assets/Biomimetic & Restorative/Bio-1.jpg', cap: 'Pre-operative Assessment' },
-        { src: 'assets/Biomimetic & Restorative/Bio-2.jpg', cap: 'Caries Removal' },
-        { src: 'assets/Biomimetic & Restorative/Bio-4.jpg', cap: 'Bonded Reconstruction' },
-        { src: 'assets/Biomimetic & Restorative/Bio-6.jpg', cap: 'Polished Finish' },
-        { src: 'assets/Biomimetic & Restorative/Bio-7.jpg', cap: 'Final Restoration' },
+        { src: 'assets/Biomimetic & Restorative/Bio-7.jpg', cap: 'Caries Removal' },
+        { src: 'assets/Biomimetic & Restorative/Bio-4.jpg', cap: 'Preparation of Enamel' },
+        { src: 'assets/Biomimetic & Restorative/Bio-6.jpg', cap: 'Final Restoration' },
       ],
       ba: { before: 'assets/Biomimetic & Restorative/Bio-1.jpg', after: 'assets/Biomimetic & Restorative/Bio-7.jpg', label: 'Fractured premolar — biomimetic onlay restoration' },
     },
@@ -237,7 +236,7 @@
         { src: 'assets/Orthodontics/Case1/Midtreatment-3.jpg', cap: 'Case 1 — Final Alignment' },
         { src: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-Surgery.jpg', cap: 'Surgical Case — Post-operative' },
       ],
-      ba: { before: 'assets/Orthodontics/Case1/Before.jpg', after: 'assets/Orthodontics/Case1/Midtreatment-3.jpg', label: 'Crowded anterior — orthodontic alignment' },
+      ba: { before: 'assets/Orthodontics/Case1/Before.jpg', after: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-Surgery.jpg', label: 'Crowded anterior — orthodontic alignment result' },
     },
     bps: {
       title: 'Bps Dentures — Prosthetic Portfolio',
@@ -245,9 +244,9 @@
       gallery: [
         { src: 'assets/Bps Dentures/Case1/Before.jpg', cap: 'Case 1 — Pre-treatment' },
         { src: 'assets/Bps Dentures/Case1/Trial.jpg', cap: 'Case 1 — Trial Denture' },
-        { src: 'assets/Bps Dentures/Case2/Before.jpg', cap: 'Case 2 — Pre-treatment' },
+        { src: 'assets/Bps Dentures/Case2/Before.jpg', cap: 'Case 2 — Pre-treatment', rotate: true },
         { src: 'assets/Bps Dentures/Case2/Trial.jpg', cap: 'Case 2 — Trial Denture' },
-        { src: 'assets/Bps Dentures/image3-1.jpg', cap: 'Prosthetic Work-up' },
+        { src: 'assets/Bps Dentures/image3-1.jpg', cap: 'Prosthetic Work-up', rotate: true },
       ],
       ba: { before: 'assets/Bps Dentures/Case1/Before.jpg', after: 'assets/Bps Dentures/Case1/Trial.jpg', label: 'Edentulous arch — BPS denture rehabilitation' },
     },
@@ -258,8 +257,8 @@
     const data = PORTFOLIOS[key];
     if (!data) return '';
     const galleryItems = data.gallery.map(g =>
-      `<div class="gallery__item"
-         data-src="${g.src}"
+      `<div class="gallery__item${g.rotate ? ' gallery__item--rotate' : ''}"
+         data-src="${g.src}"${g.rotate ? ' data-rotate' : ''}
          role="img" aria-label="${g.cap}">
          <span class="gallery__item-cap">${g.cap}</span>
        </div>`
@@ -399,7 +398,16 @@
     // Gallery items — apply bg via DOM (CSP-safe)
     $$('.gallery__item', exp).forEach((item) => {
       const src = item.dataset.src;
-      if (src) item.style.backgroundImage = `url('${src}')`;
+      if (!src) return;
+      if (item.dataset.rotate) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = item.querySelector('.gallery__item-cap')?.textContent || '';
+        img.style.cssText = 'position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;transform:rotate(90deg);display:block;pointer-events:none;z-index:0';
+        item.prepend(img);
+      } else {
+        item.style.backgroundImage = `url('${src}')`;
+      }
     });
 
     // Lightbox triggers
