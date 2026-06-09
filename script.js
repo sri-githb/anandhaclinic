@@ -135,18 +135,50 @@
 
   function makeDraggable(el, mult = 1.4, wheelMode = 'convert') {
     let down = false, startX = 0, startLeft = 0;
-    el.addEventListener('mousedown', (e) => {
-      down = true; startX = e.pageX; startLeft = el.scrollLeft;
+    let touchId = null, startY = 0;
+
+    function initDrag(pageX) {
+      down = true; startX = pageX; startLeft = el.scrollLeft;
       el.classList.add('is-dragging');
-    });
-    ['mouseup','mouseleave'].forEach(ev => el.addEventListener(ev, () => {
-      down = false; el.classList.remove('is-dragging');
-    }));
+    }
+    function endDrag() {
+      down = false; touchId = null;
+      el.classList.remove('is-dragging');
+    }
+
+    el.addEventListener('mousedown', (e) => { initDrag(e.pageX); });
+    ['mouseup','mouseleave'].forEach(ev => el.addEventListener(ev, endDrag));
     el.addEventListener('mousemove', (e) => {
       if (!down) return;
       e.preventDefault();
       el.scrollLeft = startLeft - (e.pageX - startX) * mult;
     });
+
+    el.addEventListener('touchstart', (e) => {
+      if (touchId !== null) return;
+      const t = e.changedTouches[0];
+      touchId = t.identifier;
+      startX = t.pageX; startY = t.pageY;
+    }, { passive: true });
+
+    el.addEventListener('touchmove', (e) => {
+      const t = Array.from(e.changedTouches).find(ct => ct.identifier === touchId);
+      if (!t) return;
+      const dx = t.pageX - startX;
+      const dy = t.pageY - startY;
+      // threshold check: if vertical movement dominates, let page scroll
+      if (!down && (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 8)) {
+        touchId = null;
+        return;
+      }
+      e.preventDefault();
+      if (!down) initDrag(startX);
+      el.scrollLeft = startLeft - (t.pageX - startX) * mult;
+    }, { passive: false });
+
+    el.addEventListener('touchend', endDrag);
+    el.addEventListener('touchcancel', endDrag);
+
     el.addEventListener('wheel', (e) => {
       const overflows = el.scrollWidth > el.clientWidth;
       if (wheelMode === 'horizontal') {
@@ -201,7 +233,7 @@
         { src: 'assets/Implantology/Case1/Trial.jpg', cap: 'Trial Prosthetic' },
         { src: 'assets/Implantology/Case4/Final.jpg', cap: 'Final Restoration' },
       ],
-      ba: { before: 'assets/Implantology/Case1/before.jpg', after: 'assets/Implantology/Case1/Final.jpg', label: 'Missing mandibular molar — single-tooth implant restoration' },
+      ba: { before: 'assets/Implantology/Case1/before.jpg', after: 'assets/Implantology/Case4/Final.jpg', label: 'Missing mandibular molar — single-tooth implant restoration' },
     },
     biomimetic: {
       title: 'Biomimetic & Restorative — Portfolio',
@@ -212,7 +244,7 @@
         { src: 'assets/Biomimetic & Restorative/Bio-4.jpg', cap: 'Preparation of Enamel' },
         { src: 'assets/Biomimetic & Restorative/Bio-6.jpg', cap: 'Final Restoration' },
       ],
-      ba: { before: 'assets/Biomimetic & Restorative/Bio-1.jpg', after: 'assets/Biomimetic & Restorative/Bio-7.jpg', label: 'Fractured premolar — biomimetic onlay restoration' },
+      ba: { before: 'assets/Biomimetic & Restorative/Bio-1.jpg', after: 'assets/Biomimetic & Restorative/Bio-6.jpg', label: 'Fractured premolar — biomimetic onlay restoration' },
     },
     fmr: {
       title: 'Full Mouth Rehabilitation — Cases',
@@ -343,9 +375,10 @@
         btn.setAttribute('aria-expanded', 'true');
         buildOnce();
         exp.hidden = false;
-        setTimeout(() => {
-          exp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
+        const scrollToExpand = () => exp.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        exp.addEventListener('transitionend', scrollToExpand, { once: true });
+        // fallback in case transitionend never fires
+        setTimeout(scrollToExpand, 1000);
       }
     });
   });

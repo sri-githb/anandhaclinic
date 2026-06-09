@@ -728,7 +728,7 @@ a { color: inherit; text-decoration: none; }
   scrollbar-width: none;
   padding-bottom: 8px;
   cursor: grab;
-  touch-action: pan-x;
+  touch-action: none;
 }
 .gallery__rail.is-dragging { cursor: grabbing; }
 .gallery__rail::-webkit-scrollbar { display: none; }
