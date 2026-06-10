@@ -131,66 +131,28 @@
 
   /* ── Mastery drag scroll ───────────────── */
   const track = $('#masteryTrack');
-  if (track) makeDraggable(track, 1.6);
+  if (track) makeDraggable(track, 1.6, 'horizontal');
 
   function makeDraggable(el, mult = 1.4, wheelMode = 'convert') {
     let down = false, startX = 0, startLeft = 0;
-    let touchId = null, startY = 0;
-
-    function initDrag(pageX) {
-      down = true; startX = pageX; startLeft = el.scrollLeft;
+    el.addEventListener('mousedown', (e) => {
+      down = true; startX = e.pageX; startLeft = el.scrollLeft;
       el.classList.add('is-dragging');
-    }
-    function endDrag() {
-      down = false; touchId = null;
-      el.classList.remove('is-dragging');
-    }
-
-    el.addEventListener('mousedown', (e) => { initDrag(e.pageX); });
-    ['mouseup','mouseleave'].forEach(ev => el.addEventListener(ev, endDrag));
+    });
+    ['mouseup','mouseleave'].forEach(ev => el.addEventListener(ev, () => {
+      down = false; el.classList.remove('is-dragging');
+    }));
     el.addEventListener('mousemove', (e) => {
       if (!down) return;
       e.preventDefault();
       el.scrollLeft = startLeft - (e.pageX - startX) * mult;
     });
-
-    el.addEventListener('touchstart', (e) => {
-      if (touchId !== null) return;
-      const t = e.changedTouches[0];
-      touchId = t.identifier;
-      startX = t.pageX; startY = t.pageY;
-    }, { passive: true });
-
-    el.addEventListener('touchmove', (e) => {
-      const t = Array.from(e.changedTouches).find(ct => ct.identifier === touchId);
-      if (!t) return;
-      const dx = t.pageX - startX;
-      const dy = t.pageY - startY;
-      // threshold check: if vertical movement dominates, let page scroll
-      if (!down && (Math.abs(dy) > Math.abs(dx) || Math.abs(dx) < 8)) {
-        touchId = null;
-        return;
-      }
-      e.preventDefault();
-      if (!down) initDrag(startX);
-      el.scrollLeft = startLeft - (t.pageX - startX) * mult;
-    }, { passive: false });
-
-    el.addEventListener('touchend', endDrag);
-    el.addEventListener('touchcancel', endDrag);
-
     el.addEventListener('wheel', (e) => {
       const overflows = el.scrollWidth > el.clientWidth;
-      if (wheelMode === 'horizontal') {
-        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-          el.scrollLeft += e.deltaX;
-          e.preventDefault();
-        }
-      } else {
-        if (overflows && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-          el.scrollLeft += e.deltaY;
-          e.preventDefault();
-        }
+      const absX = Math.abs(e.deltaX), absY = Math.abs(e.deltaY);
+      if (overflows && absX > absY * 1.5) {
+        el.scrollLeft += e.deltaX;
+        e.preventDefault();
       }
     }, { passive: false });
   }

@@ -723,12 +723,12 @@ a { color: inherit; text-decoration: none; }
 }
 .gallery__rail {
   display: flex; gap: 18px;
-  overflow-x: auto; overflow-y: hidden;
-  scroll-snap-type: x proximity;
+  overflow-x: auto; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: 8px;
   cursor: grab;
-  touch-action: none;
+  touch-action: auto;
 }
 .gallery__rail.is-dragging { cursor: grabbing; }
 .gallery__rail::-webkit-scrollbar { display: none; }
@@ -928,9 +928,10 @@ a { color: inherit; text-decoration: none; }
 .mastery__head { max-width: 1300px; margin: 0 auto 80px; padding: 0 clamp(20px, 5vw, 80px); }
 .mastery__lede { max-width: 56ch; margin-top: 28px; color: var(--ink-soft); font-size: 17px; line-height: 1.6; }
 .mastery__track {
-  overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; cursor: grab;
+  overflow-x: auto; overflow-y: auto; cursor: grab;
   scrollbar-width: none; padding: 0 clamp(20px, 5vw, 80px);
-  touch-action: pan-x;
+  touch-action: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .mastery__track::-webkit-scrollbar { display: none; }
 .mastery__track.is-dragging { cursor: grabbing; }
