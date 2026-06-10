@@ -325,22 +325,21 @@
 
     btn.addEventListener('click', () => {
       const isOpening = !mod.classList.contains('is-open');
-      // Close all other modules
-      modules.forEach((other) => {
-        other.classList.remove('is-open');
-        const otherBtn = other.querySelector('.module__toggle');
-        if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
-      });
-      // Open only this one
       if (isOpening) {
         mod.classList.add('is-open');
         btn.setAttribute('aria-expanded', 'true');
         buildOnce();
         exp.hidden = false;
-        const scrollToExpand = () => exp.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        exp.addEventListener('transitionend', scrollToExpand, { once: true });
-        // fallback in case transitionend never fires
-        setTimeout(scrollToExpand, 1000);
+        // Scroll to the module heading after a tiny delay so the expand animation
+        // has already begun pushing content down, ensuring we land at the right spot.
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            mod.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        });
+      } else {
+        mod.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
       }
     });
   });
@@ -391,7 +390,12 @@
     });
 
     // Gallery items — apply bg via DOM (CSP-safe)
-    $$('.gallery__item', exp).forEach((item) => {
+    const allGalleryItems = $$('.gallery__item', exp);
+    const navItems = allGalleryItems.map(g => ({
+      src: g.dataset.src,
+      cap: g.querySelector('.gallery__item-cap')?.textContent || '',
+    })).filter(g => g.src);
+    allGalleryItems.forEach((item, i) => {
       const src = item.dataset.src;
       if (!src) return;
       if (item.dataset.rotate) {
@@ -403,7 +407,8 @@
       } else {
         item.style.backgroundImage = `url('${src}')`;
       }
-      item.addEventListener('click', () => openLightbox(src, item.querySelector('.gallery__item-cap')?.textContent || ''));
+      const cap = item.querySelector('.gallery__item-cap')?.textContent || '';
+      item.addEventListener('click', () => openLightbox(src, cap, navItems, i));
     });
 
     // BA images — click to preview full image
@@ -423,23 +428,51 @@
   const lbI  = $('#lightboxImg');
   const lbC  = $('#lightboxCap');
   const lbX  = $('#lightboxClose');
+  const lbP  = $('#lightboxPrev');
+  const lbN  = $('#lightboxNext');
 
-  const openLightbox = (src, cap) => {
+  let lbItems = [];      // array of {src, cap} for gallery navigation
+  let lbIndex = 0;
+
+  const openLightbox = (src, cap, items, index) => {
+    lbItems = items || [];
+    lbIndex = typeof index === 'number' ? index : 0;
     lbI.src = src;
     lbI.alt = cap || '';
     lbC.textContent = cap || '';
+    lbP.style.display = lbItems.length > 1 ? '' : 'none';
+    lbN.style.display = lbItems.length > 1 ? '' : 'none';
     lb.classList.add('is-open');
     lb.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   };
+
+  const navigateLightbox = (dir) => {
+    if (lbItems.length < 2) return;
+    lbIndex = (lbIndex + dir + lbItems.length) % lbItems.length;
+    const item = lbItems[lbIndex];
+    lbI.src = item.src;
+    lbI.alt = item.cap || '';
+    lbC.textContent = item.cap || '';
+  };
+
   const closeLightbox = () => {
     lb.classList.remove('is-open');
     lb.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    lbItems = [];
   };
+
   lbX.addEventListener('click', closeLightbox);
+  lbP.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(-1); });
+  lbN.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(1); });
   lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (!lb.classList.contains('is-open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navigateLightbox(-1);
+    if (e.key === 'ArrowRight') navigateLightbox(1);
+  });
 
   // Global lightbox trigger for js-zoom elements outside modules
   document.addEventListener('click', (e) => {

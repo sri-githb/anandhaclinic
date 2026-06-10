@@ -1093,6 +1093,19 @@ a { color: inherit; text-decoration: none; }
   font-size: 12px; letter-spacing: .26em; text-transform: uppercase;
   margin: 0;
 }
+.lightbox__nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff; font-size: 32px; line-height: 1;
+  cursor: pointer; z-index: 2;
+  transition: transform .4s var(--easing), background .4s;
+}
+.lightbox__nav:hover { background: rgba(255,255,255,.2); }
+.lightbox__nav--prev { left: clamp(8px, 2vw, 32px); }
+.lightbox__nav--next { right: clamp(8px, 2vw, 32px); }
+.lightbox__nav:active { transform: translateY(-50%) scale(.92); }
 .lightbox__close {
   position: absolute; top: 24px; right: 28px;
   width: 48px; height: 48px; border-radius: 50%;
