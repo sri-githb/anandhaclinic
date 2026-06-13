@@ -72,26 +72,6 @@
   }, { passive: true });
   onScrollFrame();
 
-  /* ── Cursor halo ───────────────────────── */
-  const halo = $('.cursor-halo');
-  let hx = 0, hy = 0, tx = 0, ty = 0, haloActive = false, haloTimeout = null;
-  if (halo && !reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    window.addEventListener('mousemove', (e) => {
-      tx = e.clientX; ty = e.clientY;
-      clearTimeout(haloTimeout);
-      haloTimeout = setTimeout(() => { haloActive = false; }, 2000);
-      if (!haloActive) { haloActive = true; requestAnimationFrame(haloTick); }
-    }, { passive: true });
-    const haloTick = () => {
-      if (!haloActive) return;
-      hx += (tx - hx) * 0.18;
-      hy += (ty - hy) * 0.18;
-      halo.style.transform = `translate3d(${hx}px, ${hy}px, 0) translate(-50%, -50%)`;
-      if (Math.abs(tx - hx) < 0.5 && Math.abs(ty - hy) < 0.5) { return; }
-      requestAnimationFrame(haloTick);
-    };
-  }
-
 
 
   /* ── Reveal observer ───────────────────── */
@@ -182,81 +162,256 @@
      Interactive Clinical Expertise Modules
      ═════════════════════════════════════════ */
 
-  // Per-expertise portfolio data. Replace image paths with real
-  // patient/certificate uploads as they become available.
+  // Per-expertise portfolio data — each discipline has named cases.
+  // Case names are used as tab labels. A case may omit `ba` when no
+  // before/after pair is available.
   const PORTFOLIOS = {
     implant: {
       title: 'Implantology — Surgical Portfolio',
       meta: 'Computer-guided · Immediate Loading · Ridge Augmentation',
-      gallery: [
-        { src: 'assets/Implantology/Implantology.jpg', cap: 'Surgical Overview' },
-        { src: 'assets/Implantology/Case1/before.jpg', cap: 'Pre-operative Assessment' },
-        { src: 'assets/Implantology/Case2/Impression.jpg', cap: 'Impression Workflow' },
-        { src: 'assets/Implantology/Case1/Trial.jpg', cap: 'Trial Prosthetic' },
-        { src: 'assets/Implantology/Case4/Final.jpg', cap: 'Final Restoration' },
+      extraImages: [
+        { src: 'assets/Implantology/Implantology.jpg' },
       ],
-      ba: { before: 'assets/Implantology/Case1/before.jpg', after: 'assets/Implantology/Case4/Final.jpg', label: 'Missing mandibular molar — single-tooth implant restoration' },
+      cases: {
+        'Case 1': {
+          gallery: [
+            { src: 'assets/Implantology/Case1/before.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Implantology/Case1/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case1/Final.jpg', cap: 'Final Restoration' },
+          ],
+          ba: { before: 'assets/Implantology/Case1/before.jpg', after: 'assets/Implantology/Case1/Final.jpg', label: 'Single-tooth implant restoration' },
+        },
+        'Case 2': {
+          gallery: [
+            { src: 'assets/Implantology/Case2/Before.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Implantology/Case2/Impression.jpg', cap: 'Impression Workflow' },
+            { src: 'assets/Implantology/Case2/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case2/Final.jpg', cap: 'Final Restoration' },
+          ],
+          ba: { before: 'assets/Implantology/Case2/Before.jpg', after: 'assets/Implantology/Case2/Final.jpg', label: 'Multi-unit implant restoration' },
+        },
+        'Case 3': {
+          gallery: [
+            { src: 'assets/Implantology/Case3/Before.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Implantology/Case3/Impression.jpg', cap: 'Impression Workflow' },
+            { src: 'assets/Implantology/Case3/Trial.jpg', cap: 'Trial Prosthetic' },
+          ],
+          ba: { before: 'assets/Implantology/Case3/Before.jpg', after: 'assets/Implantology/Case3/Trial.jpg', label: 'Implant restoration — trial evaluation' },
+        },
+        'Case 4': {
+          gallery: [
+            { src: 'assets/Implantology/Case4/Before.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Implantology/Case4/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case4/Final.jpg', cap: 'Final Restoration' },
+          ],
+          ba: { before: 'assets/Implantology/Case4/Before.jpg', after: 'assets/Implantology/Case4/Final.jpg', label: 'Full-arch implant restoration' },
+        },
+        'Case 5': {
+          gallery: [
+            { src: 'assets/Implantology/Case5/Before.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Implantology/Case5/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case5/Final.jpg', cap: 'Final Restoration' },
+          ],
+          ba: { before: 'assets/Implantology/Case5/Before.jpg', after: 'assets/Implantology/Case5/Final.jpg', label: 'Implant-supported restoration' },
+        },
+        'Case 6': {
+          gallery: [
+            { src: 'assets/Implantology/Case6/Before.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Implantology/Case6/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case6/Final.jpg', cap: 'Final Restoration' },
+          ],
+          ba: { before: 'assets/Implantology/Case6/Before.jpg', after: 'assets/Implantology/Case6/Final.jpg', label: 'Complex implant rehabilitation' },
+        },
+      },
     },
     biomimetic: {
       title: 'Biomimetic & Restorative — Portfolio',
       meta: 'Adhesive Dentistry · Conservative Reconstruction',
-      gallery: [
-        { src: 'assets/Biomimetic & Restorative/Bio-1.jpg', cap: 'Pre-operative Assessment' },
-        { src: 'assets/Biomimetic & Restorative/Bio-7.jpg', cap: 'Caries Removal' },
-        { src: 'assets/Biomimetic & Restorative/Bio-4.jpg', cap: 'Preparation of Enamel' },
-        { src: 'assets/Biomimetic & Restorative/Bio-6.jpg', cap: 'Final Restoration' },
-      ],
-      ba: { before: 'assets/Biomimetic & Restorative/Bio-1.jpg', after: 'assets/Biomimetic & Restorative/Bio-6.jpg', label: 'Fractured premolar — biomimetic onlay restoration' },
+      cases: {
+        Case: {
+          gallery: [
+            { src: 'assets/Biomimetic & Restorative/Bio-1.jpg', cap: 'Pre-operative Assessment' },
+            { src: 'assets/Biomimetic & Restorative/Bio-7.jpg', cap: 'Caries Removal' },
+            { src: 'assets/Biomimetic & Restorative/Bio-4.jpg', cap: 'Preparation of Enamel' },
+            { src: 'assets/Biomimetic & Restorative/Bio-6.jpg', cap: 'Final Restoration' },
+          ],
+          ba: { before: 'assets/Biomimetic & Restorative/Bio-1.jpg', after: 'assets/Biomimetic & Restorative/Bio-6.jpg', label: 'Fractured premolar — biomimetic onlay restoration' },
+        },
+      },
     },
     fmr: {
       title: 'Full Mouth Rehabilitation — Cases',
       meta: 'Occlusion · Function · Aesthetics',
-      gallery: [
-        { src: 'assets/Full Mouth Rehabilitation/Case1/Before.jpg', cap: 'Case 1 — Pre-operative' },
-        { src: 'assets/Full Mouth Rehabilitation/Case1/Trial.jpg', cap: 'Case 1 — Trial Evaluation' },
-        { src: 'assets/Full Mouth Rehabilitation/Case1/Final.jpg', cap: 'Case 1 — Final Result' },
-        { src: 'assets/Full Mouth Rehabilitation/Case2/Before.jpg', cap: 'Case 2 — Pre-operative' },
-        { src: 'assets/Full Mouth Rehabilitation/Case2/Final.jpg', cap: 'Case 2 — Final Result' },
-      ],
-      ba: { before: 'assets/Full Mouth Rehabilitation/Case1/Before.jpg', after: 'assets/Full Mouth Rehabilitation/Case1/Final.jpg', label: 'Worn dentition — full-arch rehabilitation' },
+      cases: {
+        'Case 1': {
+          gallery: [
+            { src: 'assets/Full Mouth Rehabilitation/Case1/Before.jpg', cap: 'Pre-operative' },
+            { src: 'assets/Full Mouth Rehabilitation/Case1/Trial.jpg', cap: 'Trial Evaluation' },
+            { src: 'assets/Full Mouth Rehabilitation/Case1/Final.jpg', cap: 'Final Result' },
+          ],
+          ba: { before: 'assets/Full Mouth Rehabilitation/Case1/Before.jpg', after: 'assets/Full Mouth Rehabilitation/Case1/Final.jpg', label: 'Worn dentition — full-arch rehabilitation' },
+        },
+        'Case 2': {
+          gallery: [
+            { src: 'assets/Full Mouth Rehabilitation/Case2/Before.jpg', cap: 'Pre-operative' },
+            { src: 'assets/Full Mouth Rehabilitation/Case2/Trial.jpg', cap: 'Trial Evaluation' },
+            { src: 'assets/Full Mouth Rehabilitation/Case2/Final.jpg', cap: 'Final Result' },
+          ],
+          ba: { before: 'assets/Full Mouth Rehabilitation/Case2/Before.jpg', after: 'assets/Full Mouth Rehabilitation/Case2/Final.jpg', label: 'Complete rehabilitation — Case 2' },
+        },
+      },
     },
     ortho: {
       title: 'Orthodontics — Treatment Portfolio',
       meta: 'Clear Aligners · Fixed Appliances · Surgical Ortho',
-      gallery: [
-        { src: 'assets/Orthodontics/Case1/Before.jpg', cap: 'Case 1 — Pre-treatment' },
-        { src: 'assets/Orthodontics/Case1/Midtreatment-1.jpg', cap: 'Case 1 — Early Alignment' },
-        { src: 'assets/Orthodontics/Case1/Midtreatment-2.jpg', cap: 'Case 1 — Mid-treatment' },
-        { src: 'assets/Orthodontics/Case1/Midtreatment-3.jpg', cap: 'Case 1 — Final Alignment' },
-        { src: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-Surgery.jpg', cap: 'Surgical Case — Post-operative' },
-      ],
-      ba: { before: 'assets/Orthodontics/Case1/Before.jpg', after: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-Surgery.jpg', label: 'Crowded anterior — orthodontic alignment result' },
+      cases: {
+        'Case 1': {
+          gallery: [
+            { src: 'assets/Orthodontics/Case1/Before.jpg', cap: 'Pre-treatment' },
+            { src: 'assets/Orthodontics/Case1/Midtreatment-1.jpg', cap: 'Early Alignment' },
+            { src: 'assets/Orthodontics/Case1/Midtreatment-2.jpg', cap: 'Mid-treatment' },
+            { src: 'assets/Orthodontics/Case1/Midtreatment-3.jpg', cap: 'Final Alignment' },
+          ],
+          ba: { before: 'assets/Orthodontics/Case1/Before.jpg', after: 'assets/Orthodontics/Case1/Midtreatment-3.jpg', label: 'Crowded anterior — orthodontic alignment' },
+        },
+        'Case 2': {
+          gallery: [
+            { src: 'assets/Orthodontics/Case2 (Ortho Surgery)/Before.jpg', cap: 'Pre-surgical' },
+            { src: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-Surgery.jpg', cap: 'Post-operative' },
+            { src: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-1montn.jpg', cap: '1 Month Follow-up' },
+          ],
+          ba: { before: 'assets/Orthodontics/Case2 (Ortho Surgery)/Before.jpg', after: 'assets/Orthodontics/Case2 (Ortho Surgery)/After-Surgery.jpg', label: 'Surgical orthodontic correction' },
+        },
+      },
     },
     bps: {
       title: 'Bps Dentures — Prosthetic Portfolio',
       meta: 'BPS · Biofunctional · Complete Dentures',
-      gallery: [
-        { src: 'assets/Bps Dentures/Case1/Before.jpg', cap: 'Case 1 — Pre-treatment' },
-        { src: 'assets/Bps Dentures/Case1/Trial.jpg', cap: 'Case 1 — Trial Denture' },
-        { src: 'assets/Bps Dentures/Case2/Before.jpg', cap: 'Case 2 — Pre-treatment', rotate: true },
-        { src: 'assets/Bps Dentures/Case2/Trial.jpg', cap: 'Case 2 — Trial Denture' },
-        { src: 'assets/Bps Dentures/image3-1.jpg', cap: 'Prosthetic Work-up', rotate: true },
+      extraImages: [
+        { src: 'assets/Bps Dentures/image3-1.jpg' },
+        { src: 'assets/Bps Dentures/image3-2.jpg' },
+        { src: 'assets/Bps Dentures/image3-4.jpg' },
+        { src: 'assets/Bps Dentures/image3-5.jpg' },
+        { src: 'assets/Bps Dentures/image3-6.jpg' },
       ],
-      ba: { before: 'assets/Bps Dentures/Case1/Before.jpg', after: 'assets/Bps Dentures/Case1/Trial.jpg', label: 'Edentulous arch — BPS denture rehabilitation' },
+      cases: {
+        'Case 1': {
+          gallery: [
+            { src: 'assets/Bps Dentures/Case1/Before.jpg', cap: 'Pre-treatment' },
+            { src: 'assets/Bps Dentures/Case1/Trial.jpg', cap: 'Trial Denture' },
+          ],
+          ba: { before: 'assets/Bps Dentures/Case1/Before.jpg', after: 'assets/Bps Dentures/Case1/Trial.jpg', label: 'Edentulous arch — BPS denture rehabilitation' },
+        },
+        'Case 2': {
+          gallery: [
+            { src: 'assets/Bps Dentures/Case2/Before.jpg', cap: 'Pre-treatment', rotate: true },
+            { src: 'assets/Bps Dentures/Case2/Trial.jpg', cap: 'Trial Denture' },
+          ],
+          ba: { before: 'assets/Bps Dentures/Case2/Before.jpg', after: 'assets/Bps Dentures/Case2/Trial.jpg', label: 'BPS complete denture — Case 2' },
+        },
+      },
     },
   };
 
-  // Build expandable content
-  const buildExpand = (key) => {
-    const data = PORTFOLIOS[key];
-    if (!data) return '';
-    const galleryItems = data.gallery.map(g =>
+  // ── Template helpers ────────────────────────
+
+  function buildGalleryItems(gallery) {
+    return gallery.map(g =>
       `<div class="gallery__item${g.rotate ? ' gallery__item--rotate' : ''}"
          data-src="${g.src}"${g.rotate ? ' data-rotate' : ''}
          role="img" aria-label="${g.cap}">
          <span class="gallery__item-cap">${g.cap}</span>
        </div>`
     ).join('');
+  }
+
+  // ── Case switcher ────────────────────────────
+
+  function renderCase(exp, caseName) {
+    const mod = exp.closest('.module[data-key]');
+    const key = mod.dataset.key;
+    const caseData = PORTFOLIOS[key].cases[caseName];
+    if (!caseData) return;
+
+    // Toggle active tab
+    $$('.case-tab', exp).forEach(t => t.classList.toggle('is-active', t.dataset.case === caseName));
+
+    // Rebuild gallery rail (replace element to drop stale listeners)
+    const oldRail = exp.querySelector('.gallery__rail');
+    const newRail = document.createElement('div');
+    newRail.className = 'gallery__rail js-drag-rail';
+    newRail.innerHTML = buildGalleryItems(caseData.gallery);
+    oldRail.replaceWith(newRail);
+    setupGalleryItems(newRail);
+    makeDraggable(newRail, 1.4, 'horizontal');
+
+    // Lightbox navigation for new items
+    const navItems = $$('.gallery__item', newRail).map(g => ({
+      src: g.dataset.src,
+      cap: g.querySelector('.gallery__item-cap')?.textContent || '',
+    })).filter(g => g.src);
+    $$('.gallery__item', newRail).forEach((item, i) => {
+      const src = item.dataset.src;
+      const cap = item.querySelector('.gallery__item-cap')?.textContent || '';
+      if (src) item.addEventListener('click', () => openLightbox(src, cap, navItems, i));
+    });
+
+    // Update or hide BA section
+    const baWrapper = exp.querySelector('.js-ba-wrapper');
+    if (caseData.ba) {
+      baWrapper.hidden = false;
+      const ba = baWrapper.querySelector('.js-ba');
+      ba.dataset.before = caseData.ba.before;
+      ba.dataset.after  = caseData.ba.after;
+      const beforeEl = ba.querySelector('.js-ba-before');
+      const afterEl  = ba.querySelector('.js-ba-after');
+      beforeEl.style.backgroundImage = `url('${caseData.ba.before}')`;
+      afterEl.style.backgroundImage  = `url('${caseData.ba.after}')`;
+      ba.style.setProperty('--ba-pos', '50%');
+      // Update label
+      const label = baWrapper.querySelector('.ba-label');
+      if (label) label.textContent = caseData.ba.label;
+      // Re-init click preview
+      beforeEl.onclick = () => openLightbox(caseData.ba.before, 'Before');
+      afterEl.onclick  = () => openLightbox(caseData.ba.after, 'After');
+    } else {
+      baWrapper.hidden = true;
+    }
+  }
+
+  // ── Gallery item setup (backgrounds + rotate) ──
+
+  function setupGalleryItems(container) {
+    $$('.gallery__item', container).forEach(item => {
+      const src = item.dataset.src;
+      if (!src) return;
+      if (item.dataset.rotate) {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = item.querySelector('.gallery__item-cap')?.textContent || '';
+        img.style.cssText = 'position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;transform:rotate(90deg);display:block;pointer-events:none;z-index:0';
+        item.prepend(img);
+      } else {
+        item.style.backgroundImage = `url('${src}')`;
+      }
+    });
+  }
+
+  // ── Build expand template ────────────────────
+
+  const buildExpand = (key) => {
+    const data = PORTFOLIOS[key];
+    if (!data) return '';
+    const caseNames = Object.keys(data.cases);
+    const firstCase = caseNames[0];
+    const firstData = data.cases[firstCase];
+
+    const caseTabs = caseNames.length > 1
+      ? caseNames.map(n =>
+          `<button class="case-tab${n === firstCase ? ' is-active' : ''}" data-case="${n}">${n}</button>`
+        ).join('')
+      : '';
+
     return `
       <div class="expand">
         <div class="expand__head">
@@ -265,22 +420,26 @@
             <h4 class="expand__sec-title" style="display:inline-flex;margin-top:4px;">${data.title}</h4>
           </div>
           <span class="expand__meta">${data.meta}</span>
+          ${data.extraImages ? `<div class="expand__extra-imgs">${data.extraImages.map((r, i) =>
+            `<img src="${r.src}" alt="" class="js-extra-zoom" data-src="${r.src}" data-index="${i}">`
+          ).join('')}</div>` : ''}
         </div>
 
         <div>
-          <h5 class="expand__sec-title">Procedure Visuals</h5>
+          <div class="expand__section-head">
+            <h5 class="expand__sec-title">Procedure Visuals</h5>
+            ${caseTabs ? `<div class="case-tabs">${caseTabs}</div>` : ''}
+          </div>
           <div class="gallery">
-            <div class="gallery__rail js-drag-rail">
-              ${galleryItems}
-            </div>
+            <div class="gallery__rail js-drag-rail"></div>
           </div>
         </div>
 
-        <div>
+        <div class="js-ba-wrapper"${firstData.ba ? '' : ' hidden'}>
           <h5 class="expand__sec-title">Before &amp; After</h5>
           <div class="ba js-ba"
-               data-before="${data.ba.before}"
-               data-after="${data.ba.after}">
+               data-before="${firstData.ba ? firstData.ba.before : ''}"
+               data-after="${firstData.ba ? firstData.ba.after : ''}">
             <div class="ba__img ba__before js-ba-before"></div>
             <div class="ba__img ba__after  js-ba-after"></div>
             <span class="ba__label ba__label--before">Before</span>
@@ -288,17 +447,17 @@
             <div class="ba__handle js-ba-handle" tabindex="0" role="slider"
                  aria-label="Before / After comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
           </div>
-          <p style="margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);">${data.ba.label}</p>
+          <p class="ba-label" style="margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);">${firstData.ba ? firstData.ba.label : ''}</p>
         </div>
       </div>
     `;
   };
 
-  // NOTE: the inline style attributes above in template strings would
-  // violate CSP unsafe-inline restrictions if set in source HTML. Because
-  // we insert via innerHTML at runtime, browsers treat these as parsed
-  // attributes — but to remain strictly CSP-safe even under
-  // style-src 'self', we strip them and apply via DOM .style after mount.
+  // NOTE: the inline-style HTML in buildExpand violates
+  // CSP unsafe-inline if set in source HTML. At runtime, innerHTML
+  // is parsed as a newly-inserted element, so browsers treat these
+  // as parsed attributes. To be fully CSP-safe under style-src 'self'
+  // we strip them in buildOnce and re-apply via DOM.
 
   const modules = $$('.module[data-key]');
   modules.forEach((mod) => {
@@ -312,7 +471,7 @@
       exp.innerHTML = buildExpand(key);
       built = true;
       hydrateExpand(exp);
-      // Strip inline style attrs from the template above and re-apply via DOM
+      // Strip inline styles and re-apply via DOM (CSP safety)
       $$('[style]', exp).forEach((el) => {
         const css = el.getAttribute('style');
         el.removeAttribute('style');
@@ -330,8 +489,6 @@
         btn.setAttribute('aria-expanded', 'true');
         buildOnce();
         exp.hidden = false;
-        // Scroll to the module heading after a tiny delay so the expand animation
-        // has already begun pushing content down, ensuring we land at the right spot.
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             mod.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -344,18 +501,26 @@
     });
   });
 
-  /* ── Hydrate gallery, ba slider, certs ─── */
+  /* ── Hydrate gallery, ba slider, case tabs ── */
   const hydrateExpand = (exp) => {
-    // Draggable rail
-    $$('.js-drag-rail', exp).forEach((rail) => makeDraggable(rail, 1.4, 'horizontal'));
+    const key  = exp.closest('.module[data-key]').dataset.key;
+    const data = PORTFOLIOS[key];
+    const caseNames = Object.keys(data.cases);
+    const firstCase = caseNames[0];
 
-    // Before/after
+    // Render first case into the empty rail
+    renderCase(exp, firstCase);
+
+    // Case tab switching
+    $$('.case-tab', exp).forEach(tab => {
+      tab.addEventListener('click', () => renderCase(exp, tab.dataset.case));
+    });
+
+    // Before/after slider
     $$('.js-ba', exp).forEach((ba) => {
       const before = ba.querySelector('.js-ba-before');
       const after  = ba.querySelector('.js-ba-after');
       const handle = ba.querySelector('.js-ba-handle');
-      before.style.backgroundImage = `url('${ba.dataset.before}')`;
-      after .style.backgroundImage = `url('${ba.dataset.after}')`;
       ba.style.setProperty('--ba-pos', '50%');
 
       const setPos = (clientX) => {
@@ -366,17 +531,15 @@
       };
 
       let dragging = false;
-      const start = (e) => { dragging = true; e.preventDefault(); };
-      const move  = (e) => {
-        if (!dragging) return;
-        const cx = e.touches ? e.touches[0].clientX : e.clientX;
-        setPos(cx);
-      };
-      const end   = () => { dragging = false; };
-
-      handle.addEventListener('mousedown', start);
-      handle.addEventListener('touchstart', start, { passive: false });
+      handle.addEventListener('mousedown', (e) => { dragging = true; e.preventDefault(); });
+      handle.addEventListener('touchstart', (e) => { dragging = true; }, { passive: false });
       ba.addEventListener('click', (e) => setPos(e.clientX));
+
+      const move = (e) => {
+        if (!dragging) return;
+        setPos(e.touches ? e.touches[0].clientX : e.clientX);
+      };
+      const end = () => { dragging = false; };
       window.addEventListener('mousemove', move);
       window.addEventListener('touchmove', move, { passive: false });
       window.addEventListener('mouseup', end);
@@ -389,37 +552,19 @@
       });
     });
 
-    // Gallery items — apply bg via DOM (CSP-safe)
-    const allGalleryItems = $$('.gallery__item', exp);
-    const navItems = allGalleryItems.map(g => ({
-      src: g.dataset.src,
-      cap: g.querySelector('.gallery__item-cap')?.textContent || '',
-    })).filter(g => g.src);
-    allGalleryItems.forEach((item, i) => {
-      const src = item.dataset.src;
-      if (!src) return;
-      if (item.dataset.rotate) {
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = item.querySelector('.gallery__item-cap')?.textContent || '';
-        img.style.cssText = 'position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;transform:rotate(90deg);display:block;pointer-events:none;z-index:0';
-        item.prepend(img);
-      } else {
-        item.style.backgroundImage = `url('${src}')`;
-      }
-      const cap = item.querySelector('.gallery__item-cap')?.textContent || '';
-      item.addEventListener('click', () => openLightbox(src, cap, navItems, i));
-    });
-
-    // BA images — click to preview full image
-    const baBefore = exp.querySelector('.ba__before');
-    const baAfter  = exp.querySelector('.ba__after');
-    if (baBefore) baBefore.addEventListener('click', () => openLightbox(baBefore.closest('.js-ba').dataset.before, 'Before'));
-    if (baAfter)  baAfter.addEventListener('click',  () => openLightbox(baAfter.closest('.js-ba').dataset.after, 'After'));
-
-    // Lightbox triggers
+    // Lightbox triggers for js-zoom elements
     $$('.js-zoom', exp).forEach((el) => {
       el.addEventListener('click', () => openLightbox(el.dataset.src, el.dataset.cap || ''));
+    });
+
+    // Extra images lightbox with prev/next navigation
+    const extraItems = $$('.js-extra-zoom', exp).map(el => ({
+      src: el.dataset.src,
+      cap: '',
+    }));
+    $$('.js-extra-zoom', exp).forEach((el) => {
+      const idx = parseInt(el.dataset.index, 10);
+      el.addEventListener('click', () => openLightbox(el.dataset.src, '', extraItems, idx));
     });
   };
 
@@ -478,5 +623,21 @@
   document.addEventListener('click', (e) => {
     const zoom = e.target.closest('.js-zoom');
     if (zoom) openLightbox(zoom.dataset.src, zoom.dataset.cap || '');
+  });
+
+  // Dental gallery — click to play/pause video
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('.dgallery__item');
+    if (!item) return;
+    const video = item.querySelector('.dgallery__media');
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      video.muted = false;
+      item.classList.add('is-playing');
+    } else {
+      video.pause();
+      item.classList.remove('is-playing');
+    }
   });
 })();

@@ -12,8 +12,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="cursor-halo" aria-hidden="true"></div>
-
+    
     <div class="loader" id="loader" aria-hidden="true">
       <div class="loader__line"></div>
       <div class="loader__mark">SAPC</div>
@@ -21,8 +20,7 @@
 
     <header class="nav">
       <a href="#top" class="nav__brand">
-        <span class="nav__mark">S<span class="nav__dot">·</span>A</span>
-        <span class="nav__name">Sri Anandha Poly Clinic</span>
+        <img src="assets/drlogo.png" alt="Sri Anandha Poly Clinic" class="nav__logo">
       </a>
       <nav class="nav__links" aria-label="Primary">
         <a href="#evolution">Practice</a>
@@ -73,7 +71,7 @@
               </div>
               <div class="float-card float-card--b" aria-hidden="true">
                 <span class="float-card__pre">Disciplines</span>
-                <span class="float-card__val">07</span>
+                <span class="float-card__val">05</span>
                 <span class="float-card__meta">Clinical Specialisations</span>
               </div>
               <div class="float-card float-card--c" aria-hidden="true">
@@ -279,6 +277,18 @@
           </div>
         </div>
         <p class="certs-showcase__hint">Click any certificate to view full · Hover to pause</p>
+      </section>
+
+      <!-- ════════ DENTAL GALLERY ════════ -->
+      <section class="dgallery" id="dgallery">
+        <p class="section-tag">Clinical Gallery</p>
+        <h2 class="serif-title">Visual <em>Dental Stories.</em></h2>
+        <div class="dgallery__grid">
+          <div class="dgallery__item">
+            <video class="dgallery__media" src="assets/dental gallery/Dental-graphy-1.mp4" loop muted playsinline aria-label="Dental graphy"></video>
+            <button class="dgallery__play" aria-label="Play video"></button>
+          </div>
+        </div>
       </section>
 
       <!-- ════════ 6 · HUMAN ════════ -->
