@@ -177,7 +177,7 @@
           gallery: [
             { src: 'assets/Implantology/Case1/before.jpg', cap: 'Pre-operative Assessment' },
             { src: 'assets/Implantology/Case1/Trial.jpg', cap: 'Trial Prosthetic' },
-            { src: 'assets/Implantology/Case1/Final.jpg', cap: 'Final Restoration' },
+            { src: 'assets/Implantology/Case1/Final.jpg', cap: 'Final Prosthesis' },
           ],
           ba: { before: 'assets/Implantology/Case1/before.jpg', after: 'assets/Implantology/Case1/Final.jpg', label: 'Single-tooth implant restoration' },
         },
@@ -186,7 +186,7 @@
             { src: 'assets/Implantology/Case2/Before.jpg', cap: 'Pre-operative Assessment' },
             { src: 'assets/Implantology/Case2/Impression.jpg', cap: 'Impression Workflow' },
             { src: 'assets/Implantology/Case2/Trial.jpg', cap: 'Trial Prosthetic' },
-            { src: 'assets/Implantology/Case2/Final.jpg', cap: 'Final Restoration' },
+            { src: 'assets/Implantology/Case2/Final.jpg', cap: 'Final Prosthesis' },
           ],
           ba: { before: 'assets/Implantology/Case2/Before.jpg', after: 'assets/Implantology/Case2/Final.jpg', label: 'Multi-unit implant restoration' },
         },
@@ -202,7 +202,7 @@
           gallery: [
             { src: 'assets/Implantology/Case4/Before.jpg', cap: 'Pre-operative Assessment' },
             { src: 'assets/Implantology/Case4/Trial.jpg', cap: 'Trial Prosthetic' },
-            { src: 'assets/Implantology/Case4/Final.jpg', cap: 'Final Restoration' },
+            { src: 'assets/Implantology/Case4/Final.jpg', cap: 'Final Prosthesis' },
           ],
           ba: { before: 'assets/Implantology/Case4/Before.jpg', after: 'assets/Implantology/Case4/Final.jpg', label: 'Full-arch implant restoration' },
         },
@@ -210,7 +210,7 @@
           gallery: [
             { src: 'assets/Implantology/Case5/Before.jpg', cap: 'Pre-operative Assessment' },
             { src: 'assets/Implantology/Case5/Trial.jpg', cap: 'Trial Prosthetic' },
-            { src: 'assets/Implantology/Case5/Final.jpg', cap: 'Final Restoration' },
+            { src: 'assets/Implantology/Case5/Final.jpg', cap: 'Final Prosthesis' },
           ],
           ba: { before: 'assets/Implantology/Case5/Before.jpg', after: 'assets/Implantology/Case5/Final.jpg', label: 'Implant-supported restoration' },
         },
@@ -218,7 +218,7 @@
           gallery: [
             { src: 'assets/Implantology/Case6/Before.jpg', cap: 'Pre-operative Assessment' },
             { src: 'assets/Implantology/Case6/Trial.jpg', cap: 'Trial Prosthetic' },
-            { src: 'assets/Implantology/Case6/Final.jpg', cap: 'Final Restoration' },
+            { src: 'assets/Implantology/Case6/Final.jpg', cap: 'Final Prosthesis' },
           ],
           ba: { before: 'assets/Implantology/Case6/Before.jpg', after: 'assets/Implantology/Case6/Final.jpg', label: 'Complex implant rehabilitation' },
         },
