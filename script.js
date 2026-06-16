@@ -184,8 +184,8 @@
         'Case 2': {
           gallery: [
             { src: 'assets/Implantology/Case2/Before.jpg', cap: 'Pre-operative Assessment' },
-            { src: 'assets/Implantology/Case2/Impression.jpg', cap: 'Impression Workflow' },
-            { src: 'assets/Implantology/Case2/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case2/Trial.jpg', cap: 'Impression Workflow' },
+            { src: 'assets/Implantology/Case2/Impression.jpg', cap: 'Trial Prosthetic' },
             { src: 'assets/Implantology/Case2/Final.jpg', cap: 'Final Prosthesis' },
           ],
           ba: { before: 'assets/Implantology/Case2/Before.jpg', after: 'assets/Implantology/Case2/Final.jpg', label: 'Multi-unit implant restoration' },
@@ -193,10 +193,10 @@
         'Case 3': {
           gallery: [
             { src: 'assets/Implantology/Case3/Before.jpg', cap: 'Pre-operative Assessment' },
-            { src: 'assets/Implantology/Case3/Impression.jpg', cap: 'Impression Workflow' },
-            { src: 'assets/Implantology/Case3/Trial.jpg', cap: 'Trial Prosthetic' },
+            { src: 'assets/Implantology/Case3/Impression.jpg', cap: 'Trial Prosthesis' },
+            { src: 'assets/Implantology/Case3/Trial.jpg', cap: 'Impression Workflow' },
           ],
-          ba: { before: 'assets/Implantology/Case3/Before.jpg', after: 'assets/Implantology/Case3/Trial.jpg', label: 'Implant restoration — trial evaluation' },
+          ba: { before: 'assets/Implantology/Case3/Before.jpg', after: 'assets/Implantology/Case3/Impression.jpg', label: 'Implant restoration — impression workflow' },
         },
         'Case 4': {
           gallery: [
@@ -632,8 +632,8 @@
     const video = item.querySelector('.dgallery__media');
     if (!video) return;
     if (video.paused) {
-      video.play();
       video.muted = false;
+      video.play().catch(() => {});
       item.classList.add('is-playing');
     } else {
       video.pause();
